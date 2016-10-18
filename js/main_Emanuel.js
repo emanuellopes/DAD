@@ -4,25 +4,27 @@
 // Implementation:
 'use strict';
 (function() {
+
 	const MAX_NUMBER = 9;
 	const MIN_NUMBER = 1;
-	const URL_API = 'http://198.211.118.123:8080';
+
 	var timer;
-	var timerGame = '00:00.00';
 	var board = $(".dad-board input");
 
-	function init() {
+	function init(){
 		$('#authors-section .photo-zone:last-child').hide();
-        // User 1
-        $('.photo-zone:nth-child(2) h3', '#authors-section ').text('2140825');
-        $('.photo-zone:nth-child(2) p', '#authors-section ').text('Emanuel Lopes');
-        // User 2
-        $('.photo-zone:nth-child(3) h3', '#authors-section ').text('2140816');
-        $('.photo-zone:nth-child(3) p', '#authors-section ').text('Ruben Domingues');
-        // User 3
-        $('.photo-zone:nth-child(4) h3', '#authors-section ').text('2141387');
-        $('.photo-zone:nth-child(4) p', '#authors-section ').text('Ruben Pereira');
-    }
+	    // User 1
+	    $('.photo-zone:nth-child(2) h3', '#authors-section ').text('2140825');
+	    $('.photo-zone:nth-child(2) p', '#authors-section ').text('Emanuel Lopes');
+	    // User 2
+	    $('.photo-zone:nth-child(3) h3', '#authors-section ').text('2140816');
+	    $('.photo-zone:nth-child(3) p', '#authors-section ').text('Ruben Domingues');
+	    // User 3
+	    $('.photo-zone:nth-child(4) h3', '#authors-section ').text('2141387');
+	    $('.photo-zone:nth-child(4) p', '#authors-section ').text('Ruben Pereira');
+	}
+
+
     /* function getLinha(nrLine, number) {
          var line = $('.dad-row:nth-child(' + nrLine + ')', '.dad-board');
          $.each($('.dad-cell', line), function(index, value) {
@@ -37,41 +39,40 @@
              console.log(index + " Valor: " + $('input', value).val());
          });
      }*/
+
      function renderView(object) {
         //clean old data
         board.val('').removeClass('initial').removeAttr('disabled');
-        $.each(object, function(index, el) {
-        	$('.dad-cell input[data-line=' + el.line + '][data-column=' + el.column + ']').val(el.value).addClass('initial').attr('disabled', '');
+
+        $.each(object,function(index, el) {
+        	$('.dad-cell input[data-line='+el.line+'][data-column='+el.column + ']').val(el.value).addClass('initial').attr('disabled', '');
         });
     }
 
     function newGame(level) {
     	var loading = $('#loading');
-    	var url = URL_API + '/board/';
+    	var url = 'http://198.211.118.123:8080/board/';
     	url += level;
     	loading.removeClass('invisible');
     	$.get(url, function(results) {
+    		console.dir(results);
     		if (results !== undefined) {
     			renderView(results);
     		}
+    		//$('#message').append(results.toString());
     	}).fail(function() {
     		alert("API not working, try later.");
+
     	}).always(function() {
     		loading.addClass('invisible');
     	});
+
     }
 
     function messageAlert(text) {
-    	$('#time').text("Time: " + timerGame);
-    	$('#message').text(text);
-    	$('#dialog').dialog({
-    		modal: true,
-    		buttons: {
-    			Ok: function() {
-    				$(this).dialog("close");
-    			}
-    		}
-    	});
+    	var message = $('#dialog');
+    	$('#message', message).text(text);
+
     }
 
     function checkValueInBoard(value) {
@@ -82,6 +83,7 @@
     	});
     	start();
     }
+
 
     function check(){
     	var jsonArray= [];
@@ -102,10 +104,10 @@
     	console.dir(jsonArray);
     	console.log(JSON.stringify(jsonArray));
     	//$('#message').html(jsonArray.toString());
-    	/*$.post("http://198.211.118.123:8080/board/check",
+    	$.post("http://198.211.118.123:8080/board/check",
     		jsonArray, function(data){
     			console.dir(data);
-    		}, "json")
+    		})
     	.done(function(data) {
     		console.log( "second success" +data);
     	})
@@ -114,17 +116,6 @@
     	})
     	.always(function() {
     		//alert( "finished" );
-    	});*/
-
-    	$.ajax({
-    		type: "POST",
-    		url: "http://198.211.118.123:8080/board/check",
-    		data: JSON.stringify(jsonArray),
-    		contentType: 'application/json; charset=utf-8',
-    		dataType: 'json',
-    		success: function(msg) {
-    			console.dir(msg);
-    		}
     	});
     }
 
@@ -140,25 +131,27 @@
     function clearBoard() {
     	$(board).removeClass('highlight');
     }
+
+
     $(function() {
+
     	init();
+
     	board.change(function() {
     		if ($(this).val() === "") {
-    			$(this).removeClass('with-value', {
-    				duration: 500
-    			});
+    			$(this).removeClass('with-value',{duration:500});
     			return;
     		}
-    		$(this).addClass('with-value', {
-    			duration: 500
-    		});
+    		$(this).addClass('with-value',{duration:500});
     		if ($(this).val() > MAX_NUMBER) {
     			$(this).val(MAX_NUMBER);
     		}
     		if ($(this).val() < MIN_NUMBER) {
     			$(this).val(MIN_NUMBER);
     		}
+
     	});
+
     	$('#btn-new').click(function() {
     		var level = $('#select-mode option:selected');
     		newGame(level.val());
