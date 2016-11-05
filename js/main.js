@@ -3,6 +3,7 @@
 // 2141387- Ruben Pereira
 // Implementation:
 
+
 'use strict';
 (function() {
     const MAX_NUMBER = 9;
