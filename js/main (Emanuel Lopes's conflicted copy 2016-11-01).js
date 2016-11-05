@@ -1,6 +1,7 @@
 // 2140825- Emanuel Lopes
 // 2140816- Ruben Domingues
 // 2141387- Ruben Pereira
+
 // Implementation:
 'use strict';
 (function() {
@@ -33,6 +34,7 @@
         });
     }
 
+
     function newGame(level) {
         var loading = $('#loading');
         var url = URL_API + '/board/';
@@ -50,7 +52,7 @@
             $('#btn-new').prop('disabled', false);
         });
         timerGame = moment();
-        gameRun = true;
+        gameRun=true;
     }
 
     function messageAlert(text) {
@@ -75,7 +77,7 @@
     }
 
     function checkValueInBoard(value) {
-        if (gameRun === false) return;
+        if(gameRun===false)return;
         board.filter(function(index, element) {
             return ($(element).val() === value);
         }).addClass('highlight');
@@ -83,7 +85,7 @@
     }
 
     function check() {
-        if (gameRun === false) return;
+        if(gameRun===false)return;
         var loading = $('#loading');
         loading.removeClass('invisible');
         var jsonArray = [];
@@ -111,7 +113,7 @@
             if (msg.conflicts.length === 0 && msg.finished === true) {
                 $('.with-value').addClass('finished');
                 messageAlert('Game Won, congratulations!!');
-                gameRun = false;
+                gameRun=false;
             }
         }).fail(function() {
             alert('API not working, try later.');
@@ -136,115 +138,105 @@
 
     function animation(target, start, end) {
         $.each(target, function(index) {
-            var targetElement = $(target[index]);
-            if (start !== 'undefined' && end !== 'undefined') {
-                if (targetElement.attr('data-line') < start || targetElement.attr('data-line') > end) {
+            var targetElement=$(target[index]);
+            if(start!=='undefined' && end!=='undefined'){
+                if(targetElement.attr('data-line')<start || targetElement.attr('data-line')>end){
                     return;
                 }
             }
             //check limits of line
             targetElement.parent().stop().animate({
                 backgroundColor: 'rgba(234,162,89,1)'
-            }, (index + 1) * 100, 'linear', function() {
+            }, (index + 1) * 100,'linear', function() {
                 targetElement.parent().stop().animate({
                     backgroundColor: ''
-                }, (index + Math.round(100 / 60)) * 300);
+                }, (index + Math.round(100/60)) * 300);
             });
         });
-    }
-
-    function checkIfRepeated(target) {
-        var array = [];
-        target.each(function(index) {
-            var targetElement = $(target[index]);
-            array.push(targetElement.val());
-        });
-        array = $.unique(array);
-        if (array.length == 9) {
-            return true;
-        }
-        return false;
     }
 
     function checkAnimation(target) {
         //check line
         var countNrLine = 0,
-            countNrColumn = 0;
+        countNrColumn = 0;
+
         var lineNr = parseInt(target.attr('data-line'));
         var columnNr = parseInt(target.attr('data-column'));
+
         var line = $('.dad-cell input[data-line=' + lineNr + ']');
         var column = $('.dad-cell input[data-column=' + columnNr + ']');
-        countNrLine = $(line).filter(function(index, element) {
+
+
+        countNrLine = $(line).filter(function(index, element){
             return $(element).val();
         }).length;
-        if (countNrLine == 9) {
-            if (checkIfRepeated(line)) {
-                animation(line);
-            }
+
+        if(countNrLine==9){
+            animation(line);
         }
-        countNrColumn = $(column).filter(function(index, element) {
+
+        countNrColumn = $(column).filter(function(index, element){
             return $(element).val();
         }).length;
-        if (countNrColumn == 9) {
-            if (checkIfRepeated(column)) {
-                animation(column);
-            }
+
+        if(countNrColumn==9){
+            animation(column);
         }
+
         var quadColumn = quad(columnNr);
         var quadLine = quad(lineNr);
+
         var countQuad = 0;
-        var array = [];
+
         for (line = quadLine.start; line <= quadLine.end; line++) {
             for (column = quadColumn.start; column <= quadColumn.end; column++) {
                 var valueCell = $('.dad-cell input[data-column=' + column + ']' + '[data-line=' + line + ']').val();
                 if (valueCell !== '') {
                     countQuad++;
                 }
-                array.push($('.dad-cell input[data-column=' + column + ']' + '[data-line=' + line + ']').val());
             }
         }
         if (countQuad == 9) {
-            //check if has repeated numbers
-            array = $.unique(array);
-            if (array.length == 9) {
-                for (column = quadColumn.start; column <= quadColumn.end; column++) {
-                    var obj = $('.dad-cell input[data-column=' + column + ']');
-                    animation(obj, quadLine.start, quadLine.end);
-                }
+            // animation Quad
+            for (column = quadColumn.start; column <= quadColumn.end; column++) {
+                var obj = $('.dad-cell input[data-column=' + column + ']');
+                animation(obj, quadLine.start, quadLine.end);
             }
         }
     }
-    var quad = function(target) {
+
+    var quad =  function(target){
         var start, end;
         switch (target) {
             case 0:
             case 1:
             case 2:
-                start = 0;
-                end = 2;
-                break;
+            start = 0;
+            end = 2;
+            break;
             case 3:
             case 4:
             case 5:
-                start = 3;
-                end = 5;
-                break;
+            start = 3;
+            end = 5;
+            break;
             case 6:
             case 7:
             case 8:
-                start = 6;
-                end = 8;
-                break;
+            start = 6;
+            end = 8;
+            break;
         }
         return {
             start: start,
             end: end
         };
     };
+
     $(function() {
         init();
         board.change(function(event) {
-            if (gameRun === false) return;
+            if(gameRun===false)return;
             board.removeClass('individual-conflict');
             if ($(event.target).val() === '') {
                 $(event.target).removeClass('with-value individual-highlight individual-conflict', {

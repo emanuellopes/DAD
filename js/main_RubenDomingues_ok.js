@@ -118,7 +118,6 @@
         }).always(function() {
             loading.addClass('invisible');
         });
-        start();
     }
 
     function start() {
@@ -131,7 +130,7 @@
     }
 
     function clearBoard() {
-        $(board).removeClass('highlight individual-conflict');
+        $(board).removeClass('highlight');
     }
 
     function animation(target, start, end) {
@@ -252,18 +251,15 @@
                 });
                 return;
             }
-
-            if ($(event.target).val() > MAX_NUMBER) {
-                $(event.target).val('');
-                return;
-            }
-            if ($(event.target).val() < MIN_NUMBER) {
-                $(event.target).val('');
-                return;
-            }
             $(event.target).addClass('with-value', {
                 duration: 500
             });
+            if ($(event.target).val() > MAX_NUMBER) {
+                $(event.target).val(MAX_NUMBER);
+            }
+            if ($(event.target).val() < MIN_NUMBER) {
+                $(event.target).val(MIN_NUMBER);
+            }
             checkAnimation($(event.target));
         });
         board.dblclick(function(event) {
@@ -272,9 +268,10 @@
         });
         $('#btn-new').click(function() {
             newGame($('#select-mode option:selected').val());
+            //$('btn-new').removeAttr('disable');
+            //messageAlert('Game Won, congratulations!!');
         });
         $('#btn-check').click(function() {
-            stopHighLight();
             check();
         });
         $('#highlightButtons button').click(function(event) {
